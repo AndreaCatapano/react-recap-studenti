@@ -3,12 +3,13 @@ import randomCourse from './utilities/randomCourse.js'
 import randomStatus from './utilities/randomStatus.js'
 import './App.css'
 import axios from 'axios'
+import courses from './data/courses.js'
 
 
 const student = {
-  nome: "",
-  corso: "",
-  stato: true
+  name: "",
+  course: "",
+  status: true
 }
 
 
@@ -17,7 +18,6 @@ const url = "https://jsonplaceholder.typicode.com/users"
 
 function App() {
 
-  console.log(randomStatus())
 
 
   const [students, setStudents] = useState([])
@@ -37,8 +37,10 @@ function App() {
 
   function handleNewStudent(e) {
     const value = e.target.value
+
     setNewStudent(newStudent => ({
       ...newStudent,
+      id: Math.max(...students.map(student => student.id)) + 1,
       [e.target.name]: value
     }))
   }
@@ -46,9 +48,7 @@ function App() {
 
   function handleSubmit(e) {
     e.preventDefault();
-
     setStudents([...students, newStudent])
-
     setNewStudent(student)
   };
 
@@ -72,15 +72,15 @@ function App() {
           <form id="student-form" onSubmit={handleSubmit}>
             <label>
               Nome:
-              <input type="text" value={newStudent.nome} onChange={handleNewStudent} name="name" required />
+              <input type="text" value={newStudent.name} onChange={handleNewStudent} name="name" required />
             </label>
             <label>
               Corso:
-              <input type="text" value={newStudent.corso} onChange={handleNewStudent} name="course" required />
+              <input type="text" value={newStudent.course} onChange={handleNewStudent} name="course" required />
             </label>
             <label>
               Stato:
-              <select name="status" value={newStudent.stato} onChange={handleNewStudent} required>
+              <select name="status" value={newStudent.status} onChange={handleNewStudent} required>
                 <option value="active">Attivo</option>
                 <option value="inactive">Inattivo</option>
               </select>
