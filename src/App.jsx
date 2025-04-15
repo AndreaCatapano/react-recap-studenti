@@ -23,13 +23,20 @@ function App() {
   const [students, setStudents] = useState([])
   const [displayData, setDisplayData] = useState(students)
   const [newStudent, setNewStudent] = useState(student)
+  const [filterCourse, setFilterCourse] = useState("")
+  const [filterName, setFilterName] = useState("")
   const [cardstudentModify, setCardstudentModify] = useState(false)
   const [error, setError] = useState("")
 
 
   function fetchStudent() {
     axios.get(url).then(res => {
-      res.data
+      const student = {
+        id: res.data.id,
+        name: res.data.name,
+        course: randomCourse,
+        status: randomStatus
+      }
       setStudents(res.data);
     }).catch(err => console.error(err))
   }
@@ -56,9 +63,19 @@ function App() {
 
   useEffect(fetchStudent, [])
 
+
   useEffect(() => {
-    setDisplayData(students)
-  }, [students])
+    const filtered = students
+      .filter(student => student.name?.toLowerCase().includes(filterName.toLowerCase()))
+      .filter(student => student.course?.toLowerCase().includes(filterCourse.toLowerCase()) ||
+        randomCourse().toLowerCase().includes(filterCourse.toLowerCase()))
+
+    setDisplayData(filtered);
+  }, [filterName, filterCourse, students])
+
+
+
+
 
   return (
     <>
@@ -91,8 +108,8 @@ function App() {
 
         <section className="filter-section">
           <h2>Filtra</h2>
-          <input type="text" id="filter-name" placeholder="Filtra per nome" />
-          <input type="text" id="filter-course" placeholder="Filtra per corso" />
+          <input type="text" id="filter-name" value={filterName} onChange={e => setFilterName(e.target.value)} placeholder="Filtra per nome" />
+          <input type="text" id="filter-course" value={filterCourse} onChange={e => setFilterCourse(e.target.value)} placeholder="Filtra per corso" />
         </section>
 
         <section className="list-section">
@@ -110,7 +127,7 @@ function App() {
             {displayData.map(student => (
               <li key={student.id}>
                 <div>
-                  <strong>{student.name}</strong> - {randomCourse()}
+                  <strong>{student.name}</strong> - {student.course}
                   <span className="status">{randomStatus() ? "active" : "inactive"}</span>
                 </div>
                 <div className="actions">
